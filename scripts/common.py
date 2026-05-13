@@ -1,5 +1,3 @@
-print('hello world')
-print('line 2')
 """Shared helpers for outage scrapers.
 
 Defines the canonical outage record shape consumed by docs/assets/app.js
