@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import time
 
-from ..common import fetch_json, log, make_record, point_from_geometry
+from common import fetch_json, log, make_record, point_from_geometry
 
 # Cache-busting timestamp is what the live page uses; harmless to include.
 def _endpoint() -> str:
