@@ -6,7 +6,7 @@ Azure Blob Storage JSON file.
 """
 from __future__ import annotations
 
-from ..common import fetch_json, log, make_record, point_from_geometry
+from common import fetch_json, log, make_record, point_from_geometry
 
 ENDPOINT = "https://outagesiteprd101.blob.core.windows.net/outages/all-outages.json"
 PAGE_URL = "https://poweroutages.jemena.com.au/"
