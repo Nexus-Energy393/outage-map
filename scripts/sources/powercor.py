@@ -8,7 +8,7 @@ field distinguishes them).
 from __future__ import annotations
 
 from datetime import datetime
-from ..common import (
+from common import (
     fetch_json,
     log,
     make_record,
