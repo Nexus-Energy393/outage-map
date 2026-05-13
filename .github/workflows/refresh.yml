@@ -1,0 +1,41 @@
+name: Refresh outage feed
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - ".github/workflows/refresh.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-outages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run United Energy scrape
+        run: python scripts/scrape_unitedenergy.py
+      - name: Commit data
+        run: |
+          git config user.name  "nexus-outage-bot"
+          git config user.email "bot@nexusenergy.au"
+          git add docs/data/outages.json
+          if git diff --cached --quiet; then
+            echo "No data changes."
+          else
+            git commit -m "data: refresh $(date -u +%FT%TZ)"
+            git push
+          fi
