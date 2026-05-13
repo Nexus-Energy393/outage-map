@@ -6,7 +6,7 @@ subdomain from the public site):
 """
 from __future__ import annotations
 
-from ..common import fetch_json, log, make_record
+from common import fetch_json, log, make_record
 
 ENDPOINT = "https://outagetrackerservice.ausnetservices.com.au/api/v1/outages/combinedoutage"
 PAGE_URL = "https://www.outagetracker.com.au/outage-list"
