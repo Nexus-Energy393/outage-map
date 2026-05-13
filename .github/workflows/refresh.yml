@@ -26,11 +26,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Run United Energy scrape
-        run: python scripts/scrape_unitedenergy.py
+      - name: Scrape all distributors
+        working-directory: scripts
+        run: python scrape_all.py
       - name: Commit data
         run: |
-          git config user.name  "nexus-outage-bot"
+          git config user.name "nexus-outage-bot"
           git config user.email "bot@nexusenergy.au"
           git add docs/data/outages.json
           if git diff --cached --quiet; then
