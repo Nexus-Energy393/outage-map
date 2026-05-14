@@ -202,6 +202,6 @@
     initMap();
     bindFilters();
     loadData();
-    setInterval(loadData, 10 * 60 * 1000);
+    setInterval(loadData, 5 * 60 * 1000);
   });
 })();
