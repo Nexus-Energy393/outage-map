@@ -20,6 +20,12 @@ POWERCOR_PAGE = "https://www.powercor.com.au/power-outages-and-emergencies/live-
 CITIPOWER_PAGE = "https://www.citipower.com.au/power-outages-and-emergencies/live-outage-map/"
 SOURCE = "powercor"
 
+# CitiPower/Powercor's public-facing UI relabels the raw CREW_STATUS codes.
+# Map them so our popup matches the distributor's customer-facing terminology.
+STATUS_MAP = {
+        "Outage Reported": "Under investigation",
+}
+
 
 def _parse_dt(s: str | None) -> str | None:
     """Parse 'HH:MM dd-mm-yyyy' as used by the CPPC feed into ISO 8601."""
@@ -63,7 +69,7 @@ def fetch() -> list[dict]:
                 source_url=CITIPOWER_PAGE if business.lower() == "citipower" else POWERCOR_PAGE,
                 distributor=business,
                 outage_type=outage_type,
-                status=(row.get("CREW_STATUS") or "").strip() or None,
+                status=STATUS_MAP.get((row.get("CREW_STATUS") or "").strip(), (row.get("CREW_STATUS") or "").strip()) or None,
                 suburb=(row.get("TOWN") or row.get("AREA") or "").strip() or None,
                 postcode=(str(row.get("POSTCODE") or "").strip() or None),
                 area_description=(row.get("PRIVATISED") or row.get("AREA") or "").strip() or None,
