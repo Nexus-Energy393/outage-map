@@ -1,167 +1,177 @@
 <!doctype html>
 <html lang="en-AU">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Power Outage Map | Nexus Energy</title>
-  <meta name="description" content="Check planned and unplanned power outages across Victoria. Aggregated from electricity distributor sources." />
-  <link rel="preconnect" href="https://unpkg.com" crossorigin />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./assets/styles.css" />
-</head>
-<body>
-  <header class="nx-hero">
-    <div class="nx-wrap">
-      <div class="nx-hero-grid">
-        <div class="nx-hero-intro">
-          <p class="nx-eyebrow">VICTORIA · LIVE OUTAGE LOOKUP</p>
-          <h1>Power Outage Map</h1>
-          <p class="nx-sub">Check planned and unplanned power outages across Victoria.</p>
-          <p class="nx-hero-cta">
-            Need temporary power?
-            <a href="tel:1300639500" class="nx-link">Call 1300 639 500</a>
-          </p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Power Outage Map | Nexus Energy</title>
+    <meta name="description" content="Live power outage map for Victoria. Check planned and unplanned outages across Powercor, CitiPower, AusNet, United Energy and Jemena. Updated every 10 minutes." />
+    <meta property="og:title" content="Power Outage Map | Nexus Energy" />
+    <meta property="og:description" content="Live power outage map for Victoria. Check planned and unplanned outages across Powercor, CitiPower, AusNet, United Energy and Jemena." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <style>
+      .nx-embedded .nx-hero { display: none !important; }
+      .nx-side-cta.nx-side-cta--alert { background: #fff5f5; border-left: 4px solid #e02424; }
+      .nx-side-cta.nx-side-cta--alert .nx-side-cta-title { color: #b91c1c; }
+      .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+      .marker-cluster-small { background-color: rgba(11,191,100,0.4); }
+      .marker-cluster-small div { background-color: rgba(11,191,100,0.85); color:#fff; }
+      .marker-cluster-medium { background-color: rgba(245,158,11,0.4); }
+      .marker-cluster-medium div { background-color: rgba(245,158,11,0.9); color:#fff; }
+      .marker-cluster-large { background-color: rgba(224,36,36,0.4); }
+      .marker-cluster-large div { background-color: rgba(224,36,36,0.9); color:#fff; }
+    </style>
+  </head>
+  <body>
+    <header class="nx-hero">
+      <div class="nx-wrap">
+        <div class="nx-hero-grid">
+          <div class="nx-hero-intro">
+            <p class="nx-eyebrow">VICTORIA · LIVE OUTAGE LOOKUP</p>
+            <h1>Power Outage Map</h1>
+            <p class="nx-sub">Check planned and unplanned power outages across Victoria.</p>
+            <p class="nx-hero-cta">
+              Need temporary power?
+              <a href="tel:1300639500" class="nx-link">Call 1300 639 500</a>
+            </p>
+          </div>
+          <div class="nx-search-stack">
+            <form id="nx-search" class="nx-search" role="search" autocomplete="off">
+              <label class="visually-hidden" for="nx-q">Suburb or postcode</label>
+              <input id="nx-q" name="q" type="search" placeholder="Enter suburb or postcode" />
+              <button type="submit" class="nx-btn nx-btn-primary">Check outage status</button>
+            </form>
+            <div class="nx-loc-row">
+              <button id="nx-use-location" type="button" class="nx-btn nx-btn-ghost nx-btn-loc">Use my current location</button>
+              <span class="nx-loc-note">Your location is only used to centre the map.</span>
+            </div>
+            <p id="nx-loc-status" class="nx-loc-status" role="status" aria-live="polite" style="display:none"></p>
+          </div>
         </div>
-        <div class="nx-search-stack">
-          <form id="nx-search" class="nx-search" role="search" autocomplete="off">
-        <label class="visually-hidden" for="nx-q">Suburb or postcode</label>
-        <input id="nx-q" name="q" type="search" placeholder="Enter suburb or postcode" />
-        <button type="submit" class="nx-btn nx-btn-primary">Check outage status</button>
-      </form>
-
-      <div class="nx-loc-row">
-        <button id="nx-use-location" type="button" class="nx-btn nx-btn-ghost nx-btn-loc">Use my current location</button>
-        <span class="nx-loc-note">Your location is only used to centre the map.</span>
       </div>
-      <p id="nx-loc-status" class="nx-loc-status" role="status" aria-live="polite" style="display:none"></p>
-        </div>
+    </header>
+    <section class="nx-stats" aria-label="Outage summary">
+      <div class="nx-wrap nx-stats-grid">
+        <div class="nx-stat"><span class="nx-stat-num" data-stat="unplanned">–</span><span class="nx-stat-lbl">Active unplanned outages</span></div>
+        <div class="nx-stat"><span class="nx-stat-num" data-stat="planned">–</span><span class="nx-stat-lbl">Planned outages</span></div>
+        <div class="nx-stat"><span class="nx-stat-num" data-stat="customers">–</span><span class="nx-stat-lbl">Customers affected</span></div>
+        <div class="nx-stat"><span class="nx-stat-num" data-stat="updated">–</span><span class="nx-stat-lbl">Last data refresh</span></div>
       </div>
-    </div>
-  </header>
-
-  <section class="nx-stats" aria-label="Outage summary">
-    <div class="nx-wrap nx-stats-grid">
-      <div class="nx-stat"><span class="nx-stat-num" data-stat="unplanned">–</span><span class="nx-stat-lbl">Active unplanned outages</span></div>
-      <div class="nx-stat"><span class="nx-stat-num" data-stat="planned">–</span><span class="nx-stat-lbl">Planned outages</span></div>
-      <div class="nx-stat"><span class="nx-stat-num" data-stat="customers">–</span><span class="nx-stat-lbl">Customers affected</span></div>
-      <div class="nx-stat"><span class="nx-stat-num" data-stat="updated">–</span><span class="nx-stat-lbl">Last data refresh</span></div>
-    </div>
-  </section>
-
-  <section class="nx-map-section">
-    <div class="nx-wrap nx-map-grid">
-      <aside class="nx-side" aria-label="Filters and results">
-        <div class="nx-filters">
-          <h2 class="nx-h2">Filters</h2>
-          <label class="nx-chk"><input type="checkbox" data-f="unplanned" checked> Unplanned</label>
-          <label class="nx-chk"><input type="checkbox" data-f="planned" checked> Planned</label>
-          <label class="nx-chk"><input type="checkbox" data-f="restored"> Restored</label>
-          <label class="nx-sel">Distributor
-            <select id="nx-distributor">
-              <option value="">All distributors</option>
-              <option value="Powercor">Powercor</option>
-              <option value="CitiPower">CitiPower</option>
-              <option value="United Energy">United Energy</option>
-              <option value="Jemena">Jemena</option>
-              <option value="AusNet">AusNet</option>
-            </select>
-          </label>
-          <label class="nx-sel">Time window
-            <select id="nx-window">
-              <option value="now">Current</option>
-              <option value="24h">Next 24 hours</option>
-              <option value="7d">Next 7 days</option>
-            </select>
-          </label>
-        </div>
-
-        <aside class="nx-side-cta" aria-label="Generator hire support">
-          <p class="nx-side-cta-title">Power outage affecting your business?</p>
-          <p class="nx-side-cta-body">Nexus Energy supplies commercial generator hire, electrical connection and fuel support across Victoria.</p>
-          <a class="nx-btn nx-btn-primary nx-btn-sm nexus-outage-list-cta-generator-hire" href="https://nexusenergy.au/diesel-generator-hire/" target="_blank" rel="noopener">Generator hire support</a>
-        </aside>
-        <h2 class="nx-h2 nx-list-header" id="nx-list-header">Outages shown in current map view</h2>
+    </section>
+    <section class="nx-map-section">
+      <div class="nx-wrap nx-map-grid">
+        <aside class="nx-side" aria-label="Filters and results">
+          <div class="nx-filters">
+            <h2 class="nx-h2">Filters</h2>
+            <label class="nx-chk"><input type="checkbox" data-f="unplanned" checked> Unplanned</label>
+            <label class="nx-chk"><input type="checkbox" data-f="planned" checked> Planned</label>
+            <label class="nx-chk"><input type="checkbox" data-f="restored"> Restored</label>
+            <label class="nx-sel">Distributor
+              <select id="nx-distributor" aria-label="Filter by distributor">
+                <option value="">All distributors</option>
+                <option value="Powercor">Powercor</option>
+                <option value="CitiPower">CitiPower</option>
+                <option value="United Energy">United Energy</option>
+                <option value="Jemena">Jemena</option>
+                <option value="AusNet">AusNet</option>
+              </select>
+            </label>
+            <label class="nx-sel">Time window
+              <select id="nx-window" aria-label="Filter by time window">
+                <option value="now">Current</option>
+                <option value="24h">Next 24 hours</option>
+                <option value="7d">Next 7 days</option>
+              </select>
+            </label>
+          </div>
+          <aside class="nx-side-cta" aria-label="Generator hire support">
+            <p class="nx-side-cta-title">Power outage affecting your business?</p>
+            <p class="nx-side-cta-body">Nexus Energy supplies commercial generator hire, electrical connection and fuel support across Victoria.</p>
+            <a class="nx-btn nx-btn-primary nx-btn-sm nexus-outage-list-cta-generator-hire" data-cta="list" href="https://nexusenergy.au/diesel-generator-hire/" target="_blank" rel="noopener">Generator hire support</a>
+          </aside>
+          <h2 class="nx-h2 nx-list-header" id="nx-list-header">Outages shown in current map view</h2>
           <div id="nx-results" class="nx-results" aria-live="polite"></div>
-      </aside>
-
-      <div id="nx-map" class="nx-map" role="application" aria-label="Interactive outage map"></div>
-    </div>
-  </section>
-
-  <section class="nx-leadgen" id="nx-generator-hire">
-    <div class="nx-wrap nx-leadgen-grid">
-      <div>
-        <p class="nx-eyebrow nx-eyebrow-light">GENERATOR HIRE · VICTORIA WIDE</p>
-        <h2 class="nx-h1">Need temporary power for your business?</h2>
-        <p class="nx-lead">If an outage is affecting your site, Nexus Energy can supply diesel generator hire, electrical connection, cabling and fuel support across Victoria. We support commercial, industrial, construction and essential service sites with planned and emergency power solutions.</p>
-        <div class="nx-cta-row">
-          <a class="nx-btn nx-btn-primary nexus-outage-cta-generator-hire" href="https://nexusenergy.au/diesel-generator-hire/" target="_blank" rel="noopener">View generator hire options</a>
-          <a class="nx-btn nx-btn-ghost nexus-outage-cta-call" href="tel:1300639500">Call 1300 639 500</a>
+        </aside>
+        <div id="nx-map" class="nx-map" role="application" aria-label="Interactive outage map"></div>
+      </div>
+    </section>
+    <section class="nx-leadgen" id="nx-generator-hire">
+      <div class="nx-wrap nx-leadgen-grid">
+        <div>
+          <p class="nx-eyebrow nx-eyebrow-light">GENERATOR HIRE · VICTORIA WIDE</p>
+          <h2 class="nx-h1">Need temporary power for your business?</h2>
+          <p class="nx-lead">If an outage is affecting your site, Nexus Energy can supply diesel generator hire, electrical connection, cabling and fuel support across Victoria. We support commercial, industrial, construction and essential service sites with planned and emergency power solutions.</p>
+          <div class="nx-cta-row">
+            <a class="nx-btn nx-btn-primary nexus-outage-cta-generator-hire" data-cta="main" href="https://nexusenergy.au/diesel-generator-hire/" target="_blank" rel="noopener">View generator hire options</a>
+            <a class="nx-btn nx-btn-ghost nexus-outage-cta-call" data-cta="main-call" href="tel:1300639500">Call 1300 639 500</a>
+          </div>
+        </div>
+        <div class="nx-leadgen-aside">
+          <p>Planned and emergency generator support for commercial, industrial, construction and essential service sites.</p>
         </div>
       </div>
-      <div class="nx-leadgen-aside">
-        <p>Planned and emergency generator support for commercial, industrial, construction and essential service sites.</p>
+    </section>
+    <footer class="nx-foot">
+      <div class="nx-wrap">
+        <p class="nx-disclaimer">
+          Outage information is sourced from electricity distributor websites and may not be real time.
+          For emergencies, fallen powerlines, life support equipment or electrical hazards, contact your
+          electricity distributor or emergency services immediately. Nexus Energy is not an electricity
+          distributor and does not control grid restoration times.
+        </p>
+        <p class="nx-sources">
+          Data sources:
+          <a href="https://www.powercor.com.au/power-outages-and-emergencies/live-outage-map/">Powercor</a>,
+          <a href="https://www.citipower.com.au/power-outages-and-emergencies/live-outage-map/">CitiPower</a>,
+          <a href="https://www.unitedenergy.com.au/outages-and-faults/">United Energy</a>,
+          <a href="https://electricityoutages.jemena.com.au/">Jemena</a>,
+          <a href="https://www.ausnetservices.com.au/outages">AusNet</a>.
+        </p>
       </div>
-    </div>
-  </section>
-
-  <footer class="nx-foot">
-    <div class="nx-wrap">
-      <p class="nx-disclaimer">
-        Outage information is sourced from electricity distributor websites and may not be real time.
-        For emergencies, fallen powerlines, life support equipment or electrical hazards, contact your
-        electricity distributor or emergency services immediately. Nexus Energy is not an electricity
-        distributor and does not control grid restoration times.
-      </p>
-      <p class="nx-sources">
-        Data sources:
-        <a href="https://www.powercor.com.au/power-outages-and-emergencies/live-outage-map/">Powercor</a>,
-        <a href="https://www.citipower.com.au/power-outages-and-emergencies/live-outage-map/">CitiPower</a>,
-        <a href="https://www.unitedenergy.com.au/outages-and-faults/">United Energy</a>,
-        <a href="https://electricityoutages.jemena.com.au/">Jemena</a>,
-        <a href="https://www.ausnetservices.com.au/outages">AusNet</a>.
-      </p>
-    </div>
-  </footer>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="./assets/app.js" defer></script>
-  <script>
+    </footer>
+    <div id="nx-live" class="visually-hidden" role="status" aria-live="polite"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="./assets/app.js" defer></script>
+    <script>
     (function(){
-        function send(){
-              try {
-                      var h = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
-                      if (window.parent && window.parent !== window) {
-                                window.parent.postMessage({ nexusOutageMap: true, height: h }, '*');
-                      }
-              } catch(e){}
-        }
-        var t = 0;
-        function schedule(){ clearTimeout(t); t = setTimeout(send, 60); }
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-              schedule();
-        } else {
-              document.addEventListener('DOMContentLoaded', schedule);
-        }
-        window.addEventListener('load', schedule);
-        window.addEventListener('resize', schedule);
+      function send(){
         try {
-              var ro = new ResizeObserver(schedule);
-              ro.observe(document.documentElement);
-              if (document.body) ro.observe(document.body);
+          var h = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ nexusOutageMap: true, height: h }, '*');
+          }
         } catch(e){}
-        try {
-              var mo = new MutationObserver(schedule);
-              mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
-        } catch(e){}
-        setInterval(send, 4000);
+      }
+      var t = 0;
+      function schedule(){ clearTimeout(t); t = setTimeout(send, 60); }
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        schedule();
+      } else {
+        document.addEventListener('DOMContentLoaded', schedule);
+      }
+      window.addEventListener('load', schedule);
+      window.addEventListener('resize', schedule);
+      try {
+        var ro = new ResizeObserver(schedule);
+        ro.observe(document.documentElement);
+        if (document.body) ro.observe(document.body);
+      } catch(e){}
+      try {
+        var mo = new MutationObserver(schedule);
+        mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+      } catch(e){}
+      setInterval(send, 4000);
     })();
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>
