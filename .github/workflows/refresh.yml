@@ -2,8 +2,8 @@ name: Refresh outage feed
 
 on:
   schedule:
-          - cron: "*/10 * * * *"  # Runs every 10 minutes
-                    - cron: "5-55/10 * * * *"  # Offset by 5 min to double chance of running
+    - cron: "*/10 * * * *"
+    - cron: "5-55/10 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
