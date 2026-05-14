@@ -131,5 +131,37 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="./assets/app.js" defer></script>
+  <script>
+    (function(){
+        function send(){
+              try {
+                      var h = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
+                      if (window.parent && window.parent !== window) {
+                                window.parent.postMessage({ nexusOutageMap: true, height: h }, '*');
+                      }
+              } catch(e){}
+        }
+        var t = 0;
+        function schedule(){ clearTimeout(t); t = setTimeout(send, 60); }
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+              schedule();
+        } else {
+              document.addEventListener('DOMContentLoaded', schedule);
+        }
+        window.addEventListener('load', schedule);
+        window.addEventListener('resize', schedule);
+        try {
+              var ro = new ResizeObserver(schedule);
+              ro.observe(document.documentElement);
+              if (document.body) ro.observe(document.body);
+        } catch(e){}
+        try {
+              var mo = new MutationObserver(schedule);
+              mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+        } catch(e){}
+        setInterval(send, 4000);
+    })();
+  </script>
+
 </body>
 </html>
