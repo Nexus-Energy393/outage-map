@@ -167,3 +167,29 @@ a{color:inherit}
   .nx-stat-lbl{font-size:10px}
   .nx-stats-grid{gap:8px 12px}
 }
+
+
+/* === Generator Hire CTAs === */
+.nx-btn-sm{padding:8px 14px;font-size:13px;border-radius:8px}
+.nx-side-cta{
+  margin:0 0 14px;
+  padding:14px;
+  background:#0c1b14;
+  border:1px solid #1f3a2a;
+  border-left:3px solid var(--nx-green,#2bb673);
+  border-radius:10px;
+  color:#dce6df;
+}
+.nx-side-cta-title{margin:0 0 4px;font-size:14px;font-weight:700;color:#fff}
+.nx-side-cta-body{margin:0 0 10px;font-size:12.5px;line-height:1.45;color:#b8c4bc}
+.nx-side-cta .nx-btn{display:inline-block}
+.nx-popup-cta{margin:8px 0 0;padding-top:8px;border-top:1px solid #e6ece8;font-size:12.5px;color:#4a544d}
+.nx-popup-cta a.nexus-outage-popup-cta-generator-hire{color:#1f9d63;font-weight:600;text-decoration:none}
+.nx-popup-cta a.nexus-outage-popup-cta-generator-hire:hover{text-decoration:underline}
+.nx-side-cta + .nx-list-header{margin-top:4px}
+@media (max-width: 960px){.nx-side-cta{margin:8px 0 12px}}
+@media (max-width: 640px){
+  .nx-side-cta{padding:12px}
+  .nx-side-cta-title{font-size:13.5px}
+  .nx-side-cta-body{font-size:12px}
+}
