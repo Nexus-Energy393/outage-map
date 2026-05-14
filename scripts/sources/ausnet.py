@@ -16,6 +16,23 @@ SOURCE = "ausnet"
 # not appear on a "current outages" map.
 RESOLVED_STATUSES = {"resolved", "cancelled", "restored", "closed"}
 
+# Map AusNet's raw crew-status codes to the customer-facing labels used on
+# https://www.outagetracker.com.au/outage-list. Keys are uppercased before lookup.
+STATUS_MAP = {
+        "SCHEDULED": "Scheduled",
+        "IN PROGRESS": "Repair in progress",
+        "RESPONDING": "Crew assigned",
+        "DELAYED": "Delayed",
+        "RESTORED": "Restored",
+        "CANCELLED": "Cancelled",
+        "OUTAGE REPORTED": "Outage reported",
+        "AWAITING ASSESSMENT": "Awaiting assessment",
+        "AWAITING CONSTRUCTION": "Awaiting construction",
+        "MAKING SAFE": "Making safe",
+        "CONSTRUCTION SCHEDULED": "Construction scheduled",
+        "CONSTRUCTION RESPONDING": "Construction responding",
+}
+
 
 def _outage_type(row: dict) -> str:
     t = (row.get("type") or "").strip().lower()
@@ -56,7 +73,7 @@ def fetch() -> list[dict]:
                 source_url=PAGE_URL,
                 distributor="AusNet",
                 outage_type=outage_type,
-                status=incident_status or (row.get("status") or "").strip() or None,
+                status=STATUS_MAP.get((row.get("status") or "").strip().upper(), (row.get("status") or "").strip().title() or None) or incident_status or None,
                 suburb=None,  # AusNet's combinedoutage feed does not include suburb names; details[] is empty.
                 postcode=None,
                 area_description=row.get("categoryId") or None,
