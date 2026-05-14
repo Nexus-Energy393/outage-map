@@ -31,7 +31,7 @@
         <dt>Customers</dt><dd>${o.customersAffected ?? "—"}</dd>
         <dt>Reported</dt><dd>${fmt(o.reportedAt)}</dd>
         <dt>Status</dt><dd>${o.status || "—"}</dd>
-        <dt>Estimated Time Restored</dt><dd>${fmt(o.estimatedRestoration)}</dd>
+                  <dt>${o.source === "AusNet" ? "Est. power on" : "Estimated Time Restored"}</dt><dd>${fmt(o.estimatedRestoration)}</dd>
         <dt>Updated</dt><dd>${fmt(o.lastUpdated)}</dd>
       </dl>
       <p style="margin:8px 0 0"><a href="${o.sourceUrl}" target="_blank" rel="noopener">View on ${o.source}</a></p>`;
