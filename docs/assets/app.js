@@ -12,7 +12,7 @@
   const $ = (s, r) => (r || document).querySelector(s);
   const fmt = (dt) => {
     if (!dt) return "—";
-    try { return new Date(dt).toLocaleString("enh-AU", { dateStyle: "medium", timeStyle: "short" }); }
+    try { return new Date(dt).toLocaleString("en-AU", { dateStyle: "medium", timeStyle: "short" }); }
     catch { return dt; }
   };
   const pillClass = (t) => t === "planned" ? "planned" : t === "restored" ? "restored" : "unplanned";
