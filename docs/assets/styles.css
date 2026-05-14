@@ -160,3 +160,10 @@ a{color:inherit}
   .nx-bull::before{animation:none}
   .nx-btn,.nx-card{transition:none}
 }
+
+/* Phone refinement: shrink last-data-refresh stat to fit one line */
+@media (max-width: 640px){
+  .nx-stat-num{font-size:clamp(14px,4.2vw,18px);line-height:1.2}
+  .nx-stat-lbl{font-size:10px}
+  .nx-stats-grid{gap:8px 12px}
+}
