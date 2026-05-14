@@ -84,3 +84,33 @@ a{color:inherit}
     .nx-leadgen-grid{grid-template-columns:1fr}
     .nx-map{height:480px}
 }
+
+
+/* Use-my-location row + status */
+.nx-loc-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.nx-btn-loc{background:transparent;color:var(--nx-white);border-color:#3a3f47;padding:10px 16px;font-size:12px}
+.nx-btn-loc:hover{border-color:var(--nx-green);color:var(--nx-green)}
+.nx-loc-note{color:#9aa0a6;font-size:12px}
+.nx-loc-status{margin:10px 0 0;color:#c9ced6;font-size:13px;background:#0b0d10;border:1px solid #20242b;border-radius:var(--nx-radius);padding:10px 12px;max-width:640px}
+
+/* List header */
+.nx-list-header{margin:0 0 10px;color:var(--nx-grey);font-size:13px;text-transform:none;letter-spacing:0;font-weight:600}
+
+/* Selected list card */
+.nx-card--selected{border-color:var(--nx-green);box-shadow:0 0 0 2px rgba(11,191,100,.15);background:#f3fbf6}
+
+/* Extra card row spacing */
+.nx-card .row + .row{margin-top:4px}
+
+/* User location marker dot */
+.nx-userdot{width:18px;height:18px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 2px #1a73e8,0 2px 6px rgba(0,0,0,.25)}
+
+/* Mobile slide-up panel for the side list */
+@media (max-width: 720px){
+  .nx-map-section{padding:0}
+  .nx-map-grid{display:block;position:relative}
+  .nx-map{height:60vh;border-radius:0;border-left:0;border-right:0}
+  .nx-side{position:relative;margin:-12px 0 0;border-radius:14px 14px 0 0;border-left:0;border-right:0;border-bottom:0;box-shadow:0 -6px 24px rgba(15,17,21,.08);max-height:50vh;overflow:auto}
+  .nx-side::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--nx-line);margin:0 auto 12px}
+  .nx-results{max-height:none}
+}
