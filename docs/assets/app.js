@@ -12,7 +12,7 @@
   const $ = (s, r) => (r || document).querySelector(s);
   const fmt = (dt) => {
     if (!dt) return "—";
-    try { return new Date(dt).toLocaleString("en-AU", { dateStyle: "medium", timeStyle: "short" }); }
+    try { return new Date(dt).toLocaleString("enh-AU", { dateStyle: "medium", timeStyle: "short" }); }
     catch { return dt; }
   };
   const pillClass = (t) => t === "planned" ? "planned" : t === "restored" ? "restored" : "unplanned";
@@ -31,8 +31,7 @@
         <dt>Customers</dt><dd>${o.customersAffected ?? "—"}</dd>
         <dt>Reported</dt><dd>${fmt(o.reportedAt)}</dd>
         <dt>Status</dt><dd>${o.status || "—"}</dd>
-        <dt>Crew</dt><dd>${o.crewStatus || "—"}</dd>
-        <dt>ETR</dt><dd>${fmt(o.estimatedRestoration)}</dd>
+        <dt>Estimated Time Restored</dt><dd>${fmt(o.estimatedRestoration)}</dd>
         <dt>Updated</dt><dd>${fmt(o.lastUpdated)}</dd>
       </dl>
       <p style="margin:8px 0 0"><a href="${o.sourceUrl}" target="_blank" rel="noopener">View on ${o.source}</a></p>`;
@@ -43,7 +42,7 @@
       <article class="nx-card" data-id="${o.id}">
         <div class="row"><span class="nx-pill ${pillClass(o.type)}">${o.type || "unknown"}</span><span>${o.distributor || ""}</span></div>
         <h3>${o.suburb || o.areaDescription || "Unknown area"}${o.postcode ? " " + o.postcode : ""}</h3>
-        <div class="row"><span>${o.customersAffected ?? "—"} customers</span><span>ETR ${fmt(o.estimatedRestoration)}</span></div>
+        <div class="row"><span>${o.customersAffected ?? "—"} customers</span><span>Restored ${fmt(o.estimatedRestoration)}</span></div>
       </article>`;
   }
 
