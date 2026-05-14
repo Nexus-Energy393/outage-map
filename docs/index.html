@@ -26,6 +26,12 @@
         <button type="submit" class="nx-btn nx-btn-primary">Check outage status</button>
       </form>
 
+      <div class="nx-loc-row">
+        <button id="nx-use-location" type="button" class="nx-btn nx-btn-ghost nx-btn-loc">Use my current location</button>
+        <span class="nx-loc-note">Your location is only used to centre the map.</span>
+      </div>
+      <p id="nx-loc-status" class="nx-loc-status" role="status" aria-live="polite" style="display:none"></p>
+
       <p class="nx-hero-cta">
         Need temporary power?
         <a href="tel:1300639500" class="nx-link">Call 1300 639 500</a>
@@ -69,7 +75,8 @@
           </label>
         </div>
 
-        <div id="nx-results" class="nx-results" aria-live="polite"></div>
+        <h2 class="nx-h2 nx-list-header" id="nx-list-header">Outages shown in current map view</h2>
+          <div id="nx-results" class="nx-results" aria-live="polite"></div>
       </aside>
 
       <div id="nx-map" class="nx-map" role="application" aria-label="Interactive outage map"></div>
