@@ -16,7 +16,7 @@ from typing import Any, Iterable
 
 USER_AGENT = "NexusOutageBot/1.0 (+https://nexusenergy.au)"
 DEFAULT_TIMEOUT = 30
-OUT_PATH = Path("docs/data/outages.json")
+OUT_PATH = Path(__file__).resolve().parent.parent / "docs" / "data" / "outages.json"
 
 
 def log(source: str, message: str) -> None:
