@@ -109,7 +109,6 @@
     });
     renderMarkers();
     refreshVisible();
-    renderStats();
   }
 
   function refreshVisible() {
@@ -130,6 +129,7 @@
     }
     renderResults();
     renderListHeader();
+    renderStats();
   }
 
   function renderListHeader() {
@@ -191,7 +191,7 @@
   }
 
   function renderStats() {
-    const s = computeSummary(state.filtered);
+    const s = computeSummary(state.visible);
     $('[data-stat="unplanned"]').textContent = s.unplanned;
     $('[data-stat="planned"]').textContent = s.planned;
     $('[data-stat="customers"]').textContent = s.customers.toLocaleString("en-AU");
