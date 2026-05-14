@@ -16,11 +16,18 @@
 <body>
   <header class="nx-hero">
     <div class="nx-wrap">
-      <p class="nx-eyebrow">VICTORIA · LIVE OUTAGE LOOKUP</p>
-      <h1>Power Outage Map</h1>
-      <p class="nx-sub">Check planned and unplanned power outages across Victoria.</p>
-
-      <form id="nx-search" class="nx-search" role="search" autocomplete="off">
+      <div class="nx-hero-grid">
+        <div class="nx-hero-intro">
+          <p class="nx-eyebrow">VICTORIA · LIVE OUTAGE LOOKUP</p>
+          <h1>Power Outage Map</h1>
+          <p class="nx-sub">Check planned and unplanned power outages across Victoria.</p>
+          <p class="nx-hero-cta">
+            Need temporary power?
+            <a href="tel:1300639500" class="nx-link">Call 1300 639 500</a>
+          </p>
+        </div>
+        <div class="nx-search-stack">
+          <form id="nx-search" class="nx-search" role="search" autocomplete="off">
         <label class="visually-hidden" for="nx-q">Suburb or postcode</label>
         <input id="nx-q" name="q" type="search" placeholder="Enter suburb or postcode" />
         <button type="submit" class="nx-btn nx-btn-primary">Check outage status</button>
@@ -31,11 +38,8 @@
         <span class="nx-loc-note">Your location is only used to centre the map.</span>
       </div>
       <p id="nx-loc-status" class="nx-loc-status" role="status" aria-live="polite" style="display:none"></p>
-
-      <p class="nx-hero-cta">
-        Need temporary power?
-        <a href="tel:1300639500" class="nx-link">Call 1300 639 500</a>
-      </p>
+        </div>
+      </div>
     </div>
   </header>
 
