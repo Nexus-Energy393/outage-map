@@ -66,6 +66,57 @@ def fetch() -> list[dict]:
         lat = row.get("latitude")
         lon = row.get("longitude")
 
+        # AusNet's combinedoutage feed exposes the affected localities inside details[]
+        # as a list of {townName, postCode, customerCount}. Earlier versions of this
+        # scraper assumed details[] was always empty -- that is no longer the case.
+        details = row.get("details") if isinstance(row.get("details"), list) else []
+        towns: list[str] = []
+        postcodes: list[str] = []
+        detail_customers = 0
+        for d in details:
+            if not isinstance(d, dict):
+                continue
+            town = (d.get("townName") or "").strip()
+            if town and town not in towns:
+                towns.append(town)
+            pc = d.get("postCode")
+            if pc not in (None, "") and str(pc) not in postcodes:
+                postcodes.append(str(pc))
+            cc = d.get("customerCount")
+            if isinstance(cc, (int, float)):
+                detail_customers += int(cc)
+
+        suburb = ", ".join(t.title() for t in towns) or None
+        postcode = postcodes[0] if len(postcodes) == 1 else (", ".join(postcodes) or None)
+
+        nmi_count = row.get("nmiCount") if isinstance(row.get("nmiCount"), int) else None
+        if detail_customers > 0:
+            customers_affected: int | None = detail_customers
+        else:
+            customers_affected = nmi_count
+
+        # category_id values like "HVP" (High Voltage Powerline) and "LVP" describe the
+        # network segment, not a locality. Keep them in area_description as a fallback
+        # for display only when no town names are available.
+        category_id = row.get("categoryId") or None
+        area_description = None if suburb else category_id
+
+        # For planned outages the upstream feed populates plannedEndTime with the
+        # scheduled "power on" timestamp; use it as the ETR when no explicit ETR exists.
+        estimated_restoration = (
+            row.get("latestEstimatedTimeToRestoration")
+            or row.get("initialEstimatedTimeToRestoration")
+            or row.get("plannedEndTime")
+            or None
+        )
+
+        reported_at = (
+            row.get("unplannedStartTime")
+            or row.get("plannedStartTime")
+            or row.get("plannedDate")
+            or None
+        )
+
         records.append(
             make_record(
                 record_id=f"ausnet-{incident}",
@@ -74,15 +125,15 @@ def fetch() -> list[dict]:
                 distributor="AusNet",
                 outage_type=outage_type,
                 status=STATUS_MAP.get((row.get("status") or "").strip().upper(), (row.get("status") or "").strip().title() or None) or incident_status or None,
-                suburb=None,  # AusNet's combinedoutage feed does not include suburb names; details[] is empty.
-                postcode=None,
-                area_description=row.get("categoryId") or None,
-                customers_affected=row.get("nmiCount") if isinstance(row.get("nmiCount"), int) else None,
-                reported_at=row.get("unplannedStartTime") or row.get("plannedStartTime") or None,
-                estimated_restoration=row.get("latestEstimatedTimeToRestoration") or row.get("initialEstimatedTimeToRestoration") or None,
-                crew_status=row.get("status") or None,
-                latitude=float(lat) if isinstance(lat, (int, float)) else None,
-                longitude=float(lon) if isinstance(lon, (int, float)) else None,
+                suburb=suburb,
+                postcode=postcode,
+                area_description=area_description,
+                customers_affected=customers_affected,
+                reported_at=reported_at,
+                estimated_restoration=estimated_restoration,
+                crew_status=row.get("status"),
+                latitude=lat,
+                longitude=lon,
                 geometry=None,
             )
         )
