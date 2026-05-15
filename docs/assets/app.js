@@ -21,10 +21,24 @@
   };
 
   const $ = (s, r) => (r || document).querySelector(s);
+  const parseDate = (s) => {
+    if (!s) return null;
+    if (s instanceof Date) return isNaN(s) ? null : s;
+    let d = new Date(s);
+    if (!isNaN(d)) return d;
+    const m = String(s).trim().match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (m) {
+      let [, y, mo, da, h, mi, ap] = m;
+      h = parseInt(h, 10);
+      if (/PM/i.test(ap) && h !== 12) h += 12;
+      if (/AM/i.test(ap) && h === 12) h = 0;
+      return new Date(+y, +mo - 1, +da, h, +mi);
+    }
+    return null;
+  };
   const fmt = (dt) => {
-    if (!dt) return "\u2014";
-    try { return new Date(dt).toLocaleString("en-AU", { dateStyle: "medium", timeStyle: "short" }); }
-    catch { return dt; }
+    const d = parseDate(dt);
+    return d ? d.toLocaleString("en-AU", { dateStyle: "medium", timeStyle: "short" }) : "\u2014";
   };
   const pillClass = (t) => t === "planned" ? "planned" : t === "restored" ? "restored" : "unplanned";
   const bullIcon = (t) => L.divIcon({
@@ -152,6 +166,7 @@
   function applyFilters() {
     const f = state.filters;
     state.filtered = state.all.filter(o => {
+      if (Number(o.customersAffected) <= 1) return false;
       if (o.type === "unplanned" && !f.unplanned) return false;
       if (o.type === "planned" && !f.planned) return false;
       if (o.type === "restored" && !f.restored) return false;
