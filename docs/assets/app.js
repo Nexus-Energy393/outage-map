@@ -148,7 +148,7 @@
   }
 
   function withinWindow(o, win) {
-    if (win === "now") { if (o.type === "restored") return false; const rt = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null; if (rt && rt < Date.now()) return false; return true; }
+    if (win === "now") { if (o.type === "restored") return false; const now = Date.now(); const rt = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null; if (rt && rt < now) return false; const st = o.reportedAt ? new Date(o.reportedAt).getTime() : null; if (st && st > now) return false; return true; }
     const ms = win === "24h" ? 86400e3 : 7 * 86400e3;
     const t = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null;
     return !t || (t - Date.now() <= ms);
@@ -169,7 +169,6 @@
       if (Number(o.customersAffected) <= 1) return false;
       if (o.type === "unplanned" && !f.unplanned) return false;
       if (o.type === "planned" && !f.planned) return false;
-      if (o.type === "restored" && !f.restored) return false;
       if (f.distributor && (o.distributor || "") !== f.distributor) return false;
       if (!withinWindow(o, f.window)) return false;
       return true;
