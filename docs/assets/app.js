@@ -148,7 +148,7 @@
   }
 
   function withinWindow(o, win) {
-    if (win === "now") return o.type !== "restored";
+    if (win === "now") { if (o.type === "restored") return false; const rt = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null; if (rt && rt < Date.now()) return false; return true; }
     const ms = win === "24h" ? 86400e3 : 7 * 86400e3;
     const t = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null;
     return !t || (t - Date.now() <= ms);
