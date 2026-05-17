@@ -110,12 +110,19 @@ def fetch() -> list[dict]:
             or None
         )
 
-        reported_at = (
-            row.get("unplannedStartTime")
-            or row.get("plannedStartTime")
-            or row.get("plannedDate")
-            or None
-        )
+        if outage_type == "planned":
+            reported_at = (
+                row.get("plannedStartTime")
+                or row.get("plannedDate")
+                or row.get("incidentCreated")
+                or None
+            )
+        else:
+            reported_at = (
+                row.get("unplannedStartTime")
+                or row.get("incidentCreated")
+                or None
+            )
 
         records.append(
             make_record(
