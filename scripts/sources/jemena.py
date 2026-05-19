@@ -38,7 +38,7 @@ def fetch() -> list[dict]:
         if not event_id:
             continue
         # Skip resolved/hidden incidents that the source flags as not for display.
-        if row.get("IsShowOutage") is False:
+        if row.get("IsShowOutage") is False or (row.get("Status") or "").strip().lower() in ("completed", "resolved", "cancelled", "closed", "restored"):
             continue
 
         outage_type = (row.get("Type") or "Unplanned").strip().lower()
@@ -66,7 +66,7 @@ def fetch() -> list[dict]:
                 outage_type=outage_type,
                 status=(row.get("Status") or "").strip() or None,
                 suburb=suburb,
-                postcode=None,
+                postcode=next((str(s.get("PostCode") or s.get("Postcode") or s.get("PostalCode") or "").strip() for s in (row.get("ImpactedSuburbs") or []) if isinstance(s, dict) and (s.get("PostCode") or s.get("Postcode") or s.get("PostalCode"))), None),
                 area_description=suburb,
                 customers_affected=row.get("ImpactedCustomers") if isinstance(row.get("ImpactedCustomers"), int) else None,
                 reported_at=row.get("StartTime"),
