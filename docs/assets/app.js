@@ -148,9 +148,9 @@
   }
 
   function withinWindow(o, win) {
-    if (win === "now") { if (o.type === "restored") return false; const now = Date.now(); const rt = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null; if (rt && rt < now) return false; const st = o.reportedAt ? new Date(o.reportedAt).getTime() : null; if (st && st > now) return false; return true; }
+    if (win === "now") { if (o.type === "restored") return false; const now = Date.now(); const _rd = parseDate(o.estimatedRestoration); const rt = _rd ? _rd.getTime() : null; if (rt && rt < now) return false; const _sd = parseDate(o.reportedAt); const st = _sd ? _sd.getTime() : null; if (st && st > now) return false; return true; }
     const ms = win === "24h" ? 86400e3 : 7 * 86400e3;
-    const t = o.estimatedRestoration ? new Date(o.estimatedRestoration).getTime() : null;
+    const _erd = parseDate(o.estimatedRestoration); const t = _erd ? _erd.getTime() : null;
     return !t || (t - Date.now() <= ms);
   }
 
