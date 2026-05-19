@@ -6,6 +6,7 @@ subdomain from the public site):
 """
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from common import fetch_json, log, make_record
 
 ENDPOINT = "https://outagetrackerservice.ausnetservices.com.au/api/v1/outages/combinedoutage"
@@ -14,7 +15,7 @@ SOURCE = "ausnet"
 
 # AusNet's incidentStatus values that indicate the outage is over and should
 # not appear on a "current outages" map.
-RESOLVED_STATUSES = {"resolved", "cancelled", "restored", "closed"}
+RESOLVED_STATUSES = {"resolved", "cancelled", "restored", "closed", "complete", "completed"}
 
 # Map AusNet's raw crew-status codes to the customer-facing labels used on
 # https://www.outagetracker.com.au/outage-list. Keys are uppercased before lookup.
@@ -59,7 +60,7 @@ def fetch() -> list[dict]:
         if not incident:
             continue
         incident_status = (row.get("incidentStatus") or "").strip()
-        if incident_status.lower() in RESOLVED_STATUSES:
+        if incident_status.lower() in RESOLVED_STATUSES or (row.get("status") or "").strip().lower() in RESOLVED_STATUSES:
             continue
 
         outage_type = _outage_type(row)
