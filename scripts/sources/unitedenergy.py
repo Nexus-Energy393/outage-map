@@ -39,16 +39,16 @@ def fetch() -> list[dict]:
 
         postcodes = row.get("postcodes") or []
         postcode = str(postcodes[0]).strip() if isinstance(postcodes, list) and postcodes else None
-        suburb = row.get("suburb") or row.get("location") or row.get("area") or None
+        suburb = (str(row["suburbs"][0]).strip().title() if isinstance(row.get("suburbs"), list) and row.get("suburbs") else None) or row.get("suburb") or row.get("location") or None
         cause = (row.get("cause") or "").strip()
-        outage_type = (row.get("type") or "").strip().lower()
+        outage_type = (row.get("outage_type") or "").strip().lower()
         if outage_type not in ("planned", "unplanned"):
             outage_type = "planned" if "planned" in cause.lower() or "scheduled" in cause.lower() else "unplanned"
 
         # UE records don't always carry a stable id; synthesise one from the
         # stable-ish fields so the same outage gets the same id across runs.
-        rid = row.get("id") or row.get("incidentId") or _hash_id(
-            postcode, cause, row.get("etr"), row.get("customersAffected"),
+        rid = row.get("outage_id") or row.get("id") or _hash_id(
+            postcode, cause, row.get("etr"), row.get("customers_off"),
         )
 
         records.append(
@@ -61,9 +61,9 @@ def fetch() -> list[dict]:
                 status=row.get("status") or cause or None,
                 suburb=str(suburb).strip() if suburb else None,
                 postcode=postcode,
-                area_description=row.get("faultLocation") or (str(suburb).strip() if suburb else None),
-                customers_affected=row.get("customersAffected") if isinstance(row.get("customersAffected"), int) else None,
-                reported_at=row.get("startTime") or row.get("reportedAt"),
+                area_description=row.get("street_name") or (str(suburb).strip() if suburb else None),
+                customers_affected=row.get("customers_off") if isinstance(row.get("customers_off"), int) else None,
+                reported_at=row.get("last_updated_time") or row.get("startTime"),
                 estimated_restoration=row.get("etr"),
                 crew_status=row.get("crewStatus") or row.get("status") or None,
                 latitude=lat,
