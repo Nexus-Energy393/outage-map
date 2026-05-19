@@ -38,7 +38,7 @@ def fetch() -> list[dict]:
         if not event_id:
             continue
         # Skip resolved/hidden incidents that the source flags as not for display.
-        if row.get("IsShowOutage") is False or (row.get("Status") or "").strip().lower() in ("completed", "resolved", "cancelled", "closed", "restored"):
+        if row.get("IsShowOutage") is False or (row.get("Status") or "").strip().lower() in ("completed", "complete", "resolved", "cancelled", "closed", "restored") or ((row.get("StartTime") or "")[:10] and (row.get("StartTime") or "")[:10] < "2026-04-19"):
             continue
 
         outage_type = (row.get("Type") or "Unplanned").strip().lower()
