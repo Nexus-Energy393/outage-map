@@ -6,7 +6,6 @@ subdomain from the public site):
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 from common import fetch_json, log, make_record
 
 ENDPOINT = "https://outagetrackerservice.ausnetservices.com.au/api/v1/outages/combinedoutage"
