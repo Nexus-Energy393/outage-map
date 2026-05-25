@@ -2,10 +2,7 @@ name: Refresh outage feed
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
-    - cron: "5-55/10 * * * *"
-    - cron: "2-52/10 * * * *"
-    - cron: "7-57/10 * * * *"
+    - cron: "*/3 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -18,7 +15,7 @@ permissions:
 
 concurrency:
   group: refresh-outages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   refresh:
@@ -34,12 +31,25 @@ jobs:
         run: python scrape_all.py
       - name: Commit data
         run: |
-          git config user.name "nexus-outage-bot"
+          git config user.name  "nexus-outage-bot"
           git config user.email "bot@nexusenergy.au"
           git add docs/data/outages.json
           if git diff --cached --quiet; then
             echo "No data changes."
-          else
-            git commit -m "data: refresh $(date -u +%FT%TZ)"
-            git push
+            exit 0
           fi
+          git commit -m "data: refresh $(date -u +%FT%TZ)"
+
+          # Push with retry to survive transient GitHub 5xx and races
+          # with other scheduled runs (rebase if main moved underneath us).
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "Push succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; rebasing and retrying..."
+            git pull --rebase --autostash origin main || true
+            sleep $((attempt * 5))
+          done
+          echo "Push failed after 5 attempts"
+          exit 1
