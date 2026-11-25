@@ -2,7 +2,11 @@ name: Refresh outage feed
 
 on:
   schedule:
-    - cron: "*/3 * * * *"
+    # Every 10 minutes at odd minutes. The old "*/3" asked for 480 runs a day
+    # and GitHub delivered about three (Actions history, 23-25 Nov 2026), so
+    # the "live" map was often 8 hours old. Fewer, off-peak slots are the ones
+    # GitHub actually honours.
+    - cron: "7,17,27,37,47,57 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
